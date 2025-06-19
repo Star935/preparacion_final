@@ -1,4 +1,4 @@
-# .github/workflows/ci-tests.ymlgreg
+# .github/workflows/ci-tests.yml
 name: CI Tests
 
 on:
