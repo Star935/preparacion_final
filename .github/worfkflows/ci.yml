@@ -1,0 +1,54 @@
+# .github/workflows/ci-tests.yml
+name: CI Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.adminCommand(\"ping\")'" \
+          --health-interval 10s \
+          --health-timeout 5s \
+          --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Wait for MongoDB
+        run: |
+          until mongo --host localhost --eval "print(1)"; do
+            echo 'Waiting for MongoDB...'
+            sleep 2
+          done
+
+      - name: Run tests
+        run: |
+          echo '⏳ Running tests...'
+          if go test ./tests; then
+            echo '✅ All tests passed successfully!'
+          else
+            echo '❌ Some tests failed'
+            exit 1
+          fi
