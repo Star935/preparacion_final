@@ -36,7 +36,7 @@ func setupTestDB(t *testing.T) (*mongo.Collection, func()) {
 	return coll, cleanup
 }
 
-// TestCreateBook verifica que CreateBook inserta correctamente un libro en la BD
+// TestCreateBook verifica que CreateBook inserta correctamente un libro en
 func TestCreateBook(t *testing.T) {
 	coll, cleanup := setupTestDB(t)
 	defer cleanup()
